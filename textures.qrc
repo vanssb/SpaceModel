@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Textures/Earth.jpg</file>
+    </qresource>
+</RCC>

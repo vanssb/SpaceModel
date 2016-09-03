@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Fonts/Arial.bmp</file>
+    </qresource>
+</RCC>
