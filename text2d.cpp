@@ -74,10 +74,13 @@ void Text2D::setText(QString text, int x, int y){
         char2D c = charSet[ getCharNum( character ) ];
         float upLeftX = x;
         float upLeftY = y + c.height;
+
         float upRightX = x + c.width;
         float upRightY = y + c.height;
+
         float downRightX = x + c.width;
         float downRightY =  y;
+
         float downLeftX = x;
         float downLeftY = y;
         x += c.width;
@@ -92,10 +95,13 @@ void Text2D::setText(QString text, int x, int y){
     //Генерация текстурных вершин
         float uvUpLeftX = c.uv_x;
         float uvUpLeftY = 1.0f - c.uv_y;
+
         float uvUpRightX = c.uv_x + c.uv_width;
         float uvUpRightY = 1.0f - c.uv_y;
+
         float uvDownRightX = c.uv_x + c.uv_width;
         float uvDownRightY =  1.0f - ( c.uv_y + c.uv_height );
+
         float uvDownLeftX = c.uv_x;
         float uvDownLeftY = 1.0f - ( c.uv_y + c.uv_height );
     //Добавление текстурных координат в массив
@@ -110,7 +116,7 @@ void Text2D::setText(QString text, int x, int y){
 }
 
 void Text2D::printText(){
-    //Отрисовка
+//Отрисовка текста
     m_texture->bind();
     m_matrix.setToIdentity();
     m_matrix.ortho( - m_screenX, m_screenX, - m_screenY, m_screenY, 1.0f, -1.0f );

@@ -17,8 +17,7 @@ struct char2D{
     int height;
 };
 
-const float astroUnit = 12000.0f;
-const float scaleUnit = 20.0f;
+const float auScale = 149597.870700;
 
 
 

@@ -56,9 +56,10 @@ private:
     Text2D* strFPS;
     Text2D* strResolution;
     Text2D* strPos;
+    bool enabledDebug;
 public slots:
     void switchMode();
-    //void switchDebugInformation();
+    void switchDebug();
 };
 
 #endif // SCENE_H

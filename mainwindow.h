@@ -30,6 +30,7 @@ public slots:
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void resizeEvent(QResizeEvent* event);
 };
 
 #endif // MAINWINDOW_H

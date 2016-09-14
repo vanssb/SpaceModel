@@ -4,9 +4,9 @@ Star::Star(QOpenGLShaderProgram *program, int vertexAttr, int textureAttr, int t
      : SpaceObject(program, vertexAttr, textureAttr,textureUniform, model, texture){
 }
 
-void Star::initParams(QString name, float scale){
+void Star::initParams(QString name, float radius){
     m_name = name;
-    m_scale = scale;
+    m_radius = radius;
     m_x = 0;
     m_y = 0;
     m_z = 0;

@@ -21,14 +21,22 @@ public:
     float getTranslateX();
     float getTranslateY();
     float getTranslateZ();
-    float getScale();
-    virtual float getOrbit()=0;
+    float getRadius();
+    static void setDate(int year, int month, int day);
 protected:
+    float startD;
+    float oldTimeD;
+    float currTimeD;
+    static int year;
+    static int month;
+    static int day;
     QTimer time;
     float m_x, m_y, m_z;
-    float m_scale;
+    float m_radius;
     QString m_name;
-    float speedFactor;
+    float m_period;
+    float m_rotationX, m_rotationY, m_rotationZ;
+    float m_tilt;
 private:
     std::vector<float> m_vertices;
     std::vector<float> m_textureCord;

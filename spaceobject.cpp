@@ -3,6 +3,16 @@
 #include <math.h>
 
 
+int SpaceObject::year = 2000;
+int SpaceObject::month = 1;
+int SpaceObject::day = 1;
+
+void SpaceObject::setDate(int year, int month, int day){
+    SpaceObject::year = year;
+    SpaceObject::month = month;
+    SpaceObject::day = day;
+}
+
 SpaceObject::SpaceObject(QOpenGLShaderProgram *program, int vertexAttr, int textureAttr, int textureUniform, QString model, QString texture)
 {
     m_program = program;
@@ -11,7 +21,6 @@ SpaceObject::SpaceObject(QOpenGLShaderProgram *program, int vertexAttr, int text
     m_textureUniform = textureUniform;
     Loader::loadModel(QString(QCoreApplication::applicationDirPath()+"/Models/"+model).toStdString().c_str(),&m_vertices,&m_textureCord, &m_normals);
     m_texture = new QOpenGLTexture( QImage( QString(QCoreApplication::applicationDirPath()+"/Textures/"+texture) ).mirrored() );
-    speedFactor = 0.001;
 }
 
 SpaceObject::~SpaceObject(){
@@ -20,7 +29,6 @@ SpaceObject::~SpaceObject(){
 }
 
 void SpaceObject::draw(){
-
 //Отрисовка объекта:
 // 1. Привязка массивов к атрибутам в шейдере
 // 2. Включение атрибутов
@@ -54,7 +62,7 @@ float SpaceObject::getTranslateZ(){
 }
 
 
-float SpaceObject::getScale(){
-    return scaleUnit * m_scale;
+float SpaceObject::getRadius(){
+    return 40 * m_radius;
 }
 

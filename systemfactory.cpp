@@ -11,6 +11,7 @@ SystemFactory::SystemFactory(QOpenGLShaderProgram *program, int vertexAttr, int 
     m_textureUniform = textureUniform;
     m_matrixUniform = matrixUniform;
     m_orbit = new QOpenGLTexture( QImage( QString(QCoreApplication::applicationDirPath()+"/Textures/Orbit.jpg") ).mirrored() );
+    Planet::setDate(2016,1,1);
 }
 
 SystemFactory::~SystemFactory(){
@@ -33,13 +34,15 @@ void SystemFactory::initObjects(){
             Planet* object = new Planet( m_program, m_vertexAttr, m_textureAttr, m_textureUniform,
                                         q.value("model").toString(), q.value("texture").toString() );
             object->initParams( q.value("name").toString(),
-                                q.value("scale").toFloat(),
-                                q.value("spin").toFloat(),
-                                q.value("translateA").toFloat(),
-                                q.value("translateB").toFloat(),
-                                q.value("speed").toFloat(),
-                                q.value("ecliptic").toFloat(),
-                                q.value("obliquity").toFloat() );
+                                q.value("radius").toFloat(),
+                                q.value("tilt").toFloat(),
+                                q.value("n1").toFloat(), q.value("n2").toFloat(),
+                                q.value("i1").toFloat(), q.value("i2").toFloat(),
+                                q.value("w1").toFloat(), q.value("w2").toFloat(),
+                                q.value("a1").toFloat(), q.value("a2").toFloat(),
+                                q.value("e1").toFloat(), q.value("e2").toFloat(),
+                                q.value("m1").toFloat(), q.value("m2").toFloat(),
+                                q.value("period").toFloat() );
             planets.push_back(object);
         }
         q.clear();
@@ -49,12 +52,15 @@ void SystemFactory::initObjects(){
                                     q.value("model").toString(), q.value("texture").toString());
             satelite->initParams( planets[q.value("planet").toInt()-1],
                                   q.value("name").toString(),
-                                  q.value("scale").toFloat(),
-                                  q.value("spin").toFloat(),
-                                  q.value("translateA").toFloat(),
-                                  q.value("translateB").toFloat(),
-                                  q.value("speed").toFloat(),
-                                  q.value("ecliptic").toFloat() );
+                                                    q.value("radius").toFloat(),
+                                                    q.value("tilt").toFloat(),
+                                                    q.value("n1").toFloat(), q.value("n2").toFloat(),
+                                                    q.value("i1").toFloat(), q.value("i2").toFloat(),
+                                                    q.value("w1").toFloat(), q.value("w2").toFloat(),
+                                                    q.value("a1").toFloat(), q.value("a2").toFloat(),
+                                                    q.value("e1").toFloat(), q.value("e2").toFloat(),
+                                                    q.value("m1").toFloat(), q.value("m2").toFloat(),
+                                                    q.value("period").toFloat() );
             satelites.push_back(satelite);
         }
         q.clear();
@@ -62,7 +68,7 @@ void SystemFactory::initObjects(){
         while( q.next() ){
             Star* star = new Star( m_program, m_vertexAttr, m_textureAttr, m_textureUniform,
                                    q.value("model").toString(), q.value("texture").toString() );
-            star->initParams( q.value("name").toString(), q.value("scale").toFloat() );
+            star->initParams( q.value("name").toString(), q.value("radius").toFloat() );
             stars.push_back(star);
         }
     }
@@ -75,7 +81,7 @@ void SystemFactory::drawSystem(QMatrix4x4 pMatrix, QMatrix4x4 vMatrix){
 //Перебор списка звезд
     for (unsigned int i = 0; i < stars.size(); i++){
         mMatrix.setToIdentity();
-        mMatrix.scale( stars[i]->getScale() );
+        mMatrix.scale( stars[i]->getRadius(), stars[i]->getRadius(), stars[i]->getRadius() );
         m_program->setUniformValue( m_matrixUniform, pMatrix * vMatrix *  mMatrix);
         stars[i]->draw();
     }
@@ -83,23 +89,15 @@ void SystemFactory::drawSystem(QMatrix4x4 pMatrix, QMatrix4x4 vMatrix){
     for (unsigned int i = 0; i < planets.size(); i++){
     //
         mMatrix.setToIdentity();
-        mMatrix.rotate( planets[i]->getEcliptic(), 1.0f, 0.0f, 0.0f );
         mMatrix.translate( planets[i]->getTranslateX(), planets[i]->getTranslateY(), planets[i]->getTranslateZ() );
-        //Добавить наклон оси
-        //Сюда
-        mMatrix.rotate( planets[i]->getObliquity(), 1.0f, 0.0f, 0.0f );
-        //
-        mMatrix.rotate( planets[i]->getRotateAngle(), 0.0f, 1.0f, 0.0f );
-        mMatrix.scale( planets[i]->getScale() );
+        mMatrix.rotate( planets[i]->getRotateX(), 1.0f, 0.0f, 0.0f );
+        mMatrix.rotate( planets[i]->getRotateY(), 0.0f, 1.0f, 0.0f );
+        mMatrix.rotate( planets[i]->getRotateZ(), 0.0f, 0.0f, 1.0f );
+        mMatrix.scale( planets[i]->getRadius(), planets[i]->getRadius(), planets[i]->getRadius() );
     //Отправка mvp матрицы в шейдер( составляется в обратном порядке MVP = P * V * M)
         m_program->setUniformValue( m_matrixUniform, pMatrix * vMatrix *  mMatrix );
     //Отрисовка объекта
         planets[i]->draw();
-    //Отрисовка орбиты
-        mMatrix.setToIdentity();
-        mMatrix.rotate( planets[i]->getEcliptic(), 1.0f, 0.0f, 0.0f );
-        m_program->setUniformValue( m_matrixUniform, pMatrix * vMatrix *  mMatrix);
-        //drawOrbit(planets[i]);
     }
 //Перебор списка спутников
     for (unsigned int i = 0; i < satelites.size(); i++){
@@ -107,23 +105,18 @@ void SystemFactory::drawSystem(QMatrix4x4 pMatrix, QMatrix4x4 vMatrix){
         mMatrix.translate( satelites[i]->getBase()->getTranslateX(),
                            satelites[i]->getBase()->getTranslateY(),
                            satelites[i]->getBase()->getTranslateZ() );
-        mMatrix.rotate( satelites[i]->getEcliptic(), 1.0f, 0.0f, 0.0f );
         mMatrix.translate( satelites[i]->getTranslateX(), satelites[i]->getTranslateY(), satelites[i]->getTranslateZ() );
-        mMatrix.scale( satelites[i]->getScale() );
+        mMatrix.rotate( satelites[i]->getRotateX(), 1.0f, 0.0f, 0.0f );
+        mMatrix.rotate( satelites[i]->getRotateY(), 0.0f, 1.0f, 0.0f );
+        mMatrix.rotate( satelites[i]->getRotateZ(), 0.0f, 0.0f, 1.0f );
+        mMatrix.scale( satelites[i]->getRadius() );
         m_program->setUniformValue( m_matrixUniform, pMatrix * vMatrix *  mMatrix );
         satelites[i]->draw();
-            //Отрисовка орбиты
-        mMatrix.setToIdentity();
-        mMatrix.translate( satelites[i]->getBase()->getTranslateX(),
-                           satelites[i]->getBase()->getTranslateY(),
-                           satelites[i]->getBase()->getTranslateZ() );
-        mMatrix.rotate( satelites[i]->getEcliptic(), 1.0f, 0.0f, 0.0f );
-        m_program->setUniformValue( m_matrixUniform, pMatrix * vMatrix *  mMatrix);
-        //drawOrbit(satelites[i]);
     }
 }
 
 void SystemFactory::drawOrbit(SpaceObject* p){
+    /*
     std::vector<float> orbit;
     std::vector<float> orbitTexture;
 
@@ -149,4 +142,5 @@ void SystemFactory::drawOrbit(SpaceObject* p){
     m_program->disableAttributeArray( m_textureAttr );
 
     m_orbit->release();
+    */
 }

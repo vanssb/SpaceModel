@@ -8,13 +8,18 @@ Scene::Scene(QWidget *parent) : QOpenGLWidget(parent)
     m_timer.start();
     m_wireMode = false;
     scale = 1.0f;
-    distance = 30.0f;
-    xPos = astroUnit;
-    yPos = 3000.0f;
+    distance = 1000.0f;
+    xPos = 50000.0f;
+    yPos = 50000.0f;
     zPos = 0.0f;
     hRot = M_PI / 2;
     vRot = M_PI / 2;
     m_frameCount = 0;
+    enabledDebug = false;
+}
+
+void Scene::switchDebug(){
+    enabledDebug = !enabledDebug;
 }
 
 void Scene::initDebugInfo(){
@@ -43,16 +48,14 @@ void Scene::showDebugInfo(){
     strResolution->setText( "Resolution: "+
                             QString::number( width() ) + "x" +
                             QString::number( height() ),
-                            -width() + 20,
-                            -height() + 56 );
+                            -width() + 20, -height() + 56 );
     strResolution->printText();
 
     strPos->setText( "Position: (" +
                            QString::number( xPos, 'f', 2 ) + ", " +
                            QString::number( yPos, 'f', 2 ) + ", " +
                            QString::number( zPos, 'f',2 ) + ")",
-                           -width() + 20,
-                           -height() + 92);
+                           -width() + 20, -height() + 92);
     strPos->printText();
 }
 
@@ -95,10 +98,10 @@ void Scene::initializeGL(){
     glClearColor(0.0f,0.0f,0.0f,1.0f);
 //Включение теста глубины
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE_ARB);
 //Включение отсечения невидимых граней
     //glEnable(GL_CULL_FACE);
-    //glEnable(GL_ALPHA_TEST);
+    glEnable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glDisable(GL_CULL_FACE);
@@ -125,14 +128,15 @@ void Scene::paintGL(){
 //Глобальные координаты modelMatrix
     factory->drawSystem( pMatrix, vMatrix );
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    showDebugInfo();
+    if (enabledDebug)
+        showDebugInfo();
     m_program.release();
 }
 
 void Scene::resizeGL(int w, int h){
 //Матрица проекции, использует: угол обзора, соотношение сторон и ближнюю и дальнюю стенки проекции
     float aspect = float(w) / float(h ? h : 1);
-    const float zNear = 0.1f, zFar = 650.0f * astroUnit, fov = 60.0;
+    const float zNear = 100.0f, zFar = 25000000.0f, fov = 60.0;
     pMatrix.setToIdentity();
     pMatrix.perspective(fov, aspect, zNear, zFar);
 }

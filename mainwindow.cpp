@@ -22,6 +22,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+   QMainWindow::resizeEvent(event);
+   ui->widget->resize(this->width(),this->height());
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event){
     switch ( event->key() ) {
     case Qt::Key_Escape:
@@ -65,6 +71,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
         this->setMouseTracking(mouseLock);
         ui->centralWidget->setMouseTracking(mouseLock);
         */
+    break;
+    case Qt::Key_I:
+        ui->widget->switchDebug();
     break;
     }
 }
