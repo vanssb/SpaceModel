@@ -3,14 +3,20 @@
 #include <math.h>
 
 
-int SpaceObject::year = 2000;
-int SpaceObject::month = 1;
-int SpaceObject::day = 1;
+int SpaceObject::year = 0;
+int SpaceObject::month = 0;
+int SpaceObject::day = 0;
 
 void SpaceObject::setDate(int year, int month, int day){
     SpaceObject::year = year;
     SpaceObject::month = month;
     SpaceObject::day = day;
+}
+
+void SpaceObject::setDate(QDate date){
+    SpaceObject::year = date.year();
+    SpaceObject::month = date.month();
+    SpaceObject::day = date.day();
 }
 
 SpaceObject::SpaceObject(QOpenGLShaderProgram *program, int vertexAttr, int textureAttr, int textureUniform, QString model, QString texture)
@@ -64,5 +70,9 @@ float SpaceObject::getTranslateZ(){
 
 float SpaceObject::getRadius(){
     return 40 * m_radius;
+}
+
+QString SpaceObject::getName(){
+    return m_name;
 }
 

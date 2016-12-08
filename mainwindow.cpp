@@ -1,11 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <scene.h>
+#include <logger.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    Logger::write(LOG_INFO, "Session started.");
     ui->setupUi( this );
     wireMode = false;
     fullscreen = false;
@@ -19,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    Logger::write(LOG_INFO, "Session finished.");
     delete ui;
 }
 

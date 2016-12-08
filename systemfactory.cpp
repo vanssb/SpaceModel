@@ -2,19 +2,23 @@
 #include <QCoreApplication>
 #include <QSqlQuery>
 #include <math.h>
+#include <logger.h>
+#include <QDate>
 
 SystemFactory::SystemFactory(QOpenGLShaderProgram *program, int vertexAttr, int textureAttr, int textureUniform, int matrixUniform)
 {
+    Logger::write(LOG_INFO, "Factory created.");
     m_program = program;
     m_vertexAttr = vertexAttr;
     m_textureAttr = textureAttr ;
     m_textureUniform = textureUniform;
     m_matrixUniform = matrixUniform;
     m_orbit = new QOpenGLTexture( QImage( QString(QCoreApplication::applicationDirPath()+"/Textures/Orbit.jpg") ).mirrored() );
-    Planet::setDate(2016,1,1);
+    Planet::setDate(QDate::currentDate());
 }
 
 SystemFactory::~SystemFactory(){
+    Logger::write(LOG_INFO, "Factory deleted.");
     for ( unsigned int i = 0; i < planets.size(); i++ ){
         delete planets[i];
         planets[i] = NULL;
@@ -31,9 +35,9 @@ void SystemFactory::initObjects(){
     if (data.open()){
         QSqlQuery q("SELECT * FROM Planets");
         while ( q.next() ){
-            Planet* object = new Planet( m_program, m_vertexAttr, m_textureAttr, m_textureUniform,
+            Planet* planet = new Planet( m_program, m_vertexAttr, m_textureAttr, m_textureUniform,
                                         q.value("model").toString(), q.value("texture").toString() );
-            object->initParams( q.value("name").toString(),
+            planet->initParams( q.value("name").toString(),
                                 q.value("radius").toFloat(),
                                 q.value("tilt").toFloat(),
                                 q.value("n1").toFloat(), q.value("n2").toFloat(),
@@ -43,8 +47,9 @@ void SystemFactory::initObjects(){
                                 q.value("e1").toFloat(), q.value("e2").toFloat(),
                                 q.value("m1").toFloat(), q.value("m2").toFloat(),
                                 q.value("period").toFloat() );
-            planets.push_back(object);
+            planets.push_back(planet);
         }
+        Logger::write(LOG_INFO, "Planets loaded.");
         q.clear();
         q.exec("SELECT * FROM Satelites");
         while( q.next() ){
@@ -63,6 +68,7 @@ void SystemFactory::initObjects(){
                                                     q.value("period").toFloat() );
             satelites.push_back(satelite);
         }
+        Logger::write(LOG_INFO, "Satelites loaded.");
         q.clear();
         q.exec( "SELECT * FROM Stars" );
         while( q.next() ){
@@ -71,9 +77,10 @@ void SystemFactory::initObjects(){
             star->initParams( q.value("name").toString(), q.value("radius").toFloat() );
             stars.push_back(star);
         }
+         Logger::write( LOG_INFO, "Stars loaded" );
     }
     else{
-        qDebug() << data.lastError().text();
+        Logger::write( LOG_ERROR, data.lastError().text() );
     }
 }
 

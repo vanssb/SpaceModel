@@ -1,5 +1,6 @@
 #include "scene.h"
 #include <math.h>
+#include "logger.h"
 
 Scene::Scene(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -16,6 +17,7 @@ Scene::Scene(QWidget *parent) : QOpenGLWidget(parent)
     vRot = M_PI / 2;
     m_frameCount = 0;
     enabledDebug = false;
+    Logger::write(LOG_INFO, "Scene created.");
 }
 
 void Scene::switchDebug(){
@@ -86,7 +88,7 @@ void Scene::initializeGL(){
     m_program.addShader(&fShader);
     if ( !m_program.link() )
     {
-        qWarning( "Error: unable to link a shader program." );
+        Logger::write(LOG_WARNING, "Unable to link a shader program." );
         return;
     }
 //Привязка атрибутов

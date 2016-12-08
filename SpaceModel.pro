@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     help.cpp \
     satelite.cpp \
     star.cpp \
-    text2d.cpp
+    text2d.cpp \
+    logger.cpp
 
 HEADERS  += mainwindow.h \
     scene.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     satelite.h \
     star.h \
     text2d.h \
-    types.h
+    types.h \
+    logger.h
 
 FORMS    += mainwindow.ui \
     help.ui

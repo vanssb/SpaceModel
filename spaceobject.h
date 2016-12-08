@@ -7,6 +7,7 @@
 #include <QOpenGLShaderProgram>
 #include <QWidget>
 #include <QTimer>
+#include <QDate>
 #include "types.h"
 
 class SpaceObject : public QWidget
@@ -22,7 +23,9 @@ public:
     float getTranslateY();
     float getTranslateZ();
     float getRadius();
+    QString getName();
     static void setDate(int year, int month, int day);
+    static void setDate(QDate date);
 protected:
     float startD;
     float oldTimeD;

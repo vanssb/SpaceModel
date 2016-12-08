@@ -1,6 +1,7 @@
 #include "planet.h"
 #include <math.h>
 #include <QDebug>
+#include <logger.h>
 
 Planet::Planet(QOpenGLShaderProgram *program, int vertexAttr, int textureAttr, int textureUniform, QString model, QString texture)
     : SpaceObject(program, vertexAttr, textureAttr,textureUniform, model, texture)
@@ -64,6 +65,7 @@ void Planet::initParams(QString name, float radius,
     m_name = name;
     time.setInterval(1000/60);
     time.start();
+    Logger::write(LOG_INFO, "Created object '" + m_name + "'");
 }
 
 float Planet::getRotateX(){
